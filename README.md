@@ -38,8 +38,8 @@ serve(async (req) => {
 });
 ```
 
-_Note_ For security and reliabilit we don't recommend you import the library off
-our repo. Fork this project and import it off your own github account.
+_Note_ For security and reliability we don't recommend you import the library
+off our repo. Fork this project and import it off your own github account.
 
 # Tests
 
