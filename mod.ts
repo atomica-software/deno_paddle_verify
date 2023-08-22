@@ -1,5 +1,3 @@
-import { createHash } from './deps.ts';
-
 //See https://developer.paddle.com/webhooks/signature-verification
 
 async function hashSignature(
