@@ -1,7 +1,8 @@
 # Deno Paddle Webhook Verify
 
 A small deno module to verify webhook signatures so you can easily build support
-for Paddle Webhooks.
+for Paddle Webhooks in to
+[Supabase Edge Functions](https://supabase.com/docs/guides/functions).
 
 This is for the billing version of Paddle not Classic. Read the Paddle
 [signature verification docs](https://developer.paddle.com/webhooks/signature-verification).
