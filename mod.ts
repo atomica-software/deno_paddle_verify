@@ -1,15 +1,52 @@
-/**
- * Every exported symbol ideally should have a documentation line.
- *
- * It is important that documentation is easily human readable,
- * but there is also a need to provide additional styling information to ensure
- * generated documentation is more rich text.
- * Therefore JSDoc should generally follow markdown markup to enrich the text.
- *
- * follow https://deno.land/manual/contributing/style_guide
- *
- * @param foo - Description of non obvious parameter
- */
-export default function starter(foo: string): string {
-  return foo;
+import { createHash } from './deps.ts';
+
+//See https://developer.paddle.com/webhooks/signature-verification
+
+async function hashSignature(
+  ts: string,
+  requestBody: string,
+  h1: string,
+  secretKey: string
+): Promise<boolean> {
+  const encoder = new TextEncoder();
+  const payload = ts + ':' + requestBody;
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secretKey),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const signature = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    encoder.encode(payload)
+  );
+  const signatureHex = Array.from(new Uint8Array(signature))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+  return signatureHex === h1;
+}
+
+function extractValues(input: string): { ts: string; h1: string } {
+  const matchTs = input.match(/ts=(\d+)/);
+  const matchH1 = input.match(/h1=([a-f0-9]+)/);
+  return {
+    ts: matchTs ? matchTs[1] : '',
+    h1: matchH1 ? matchH1[1] : '',
+  };
+}
+
+export async function validateSignature(
+  signature: string,
+  body: string,
+  secret: string
+) {
+  const signatureComponents = extractValues(signature);
+  return await hashSignature(
+    signatureComponents.ts,
+    body,
+    signatureComponents.h1,
+    secret
+  );
 }
